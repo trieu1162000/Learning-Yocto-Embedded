@@ -24,17 +24,17 @@ The list of all meta-raspberrypi dependencies are contained in the [Readme.md](h
 ## Modify
 - Initialize the build env  
 ```$ source oe-init-build-env```
-- Modify your local.conf file: Set your machine to ```MACHINE = "raspberrypi"``` according to your Raspberry Pi [model](https://github.com/agherzan/meta-raspberrypi/blob/krikstone /docs/layer-contents.md#supported-machines).
+- Modify your local.conf file: Set your machine to ```MACHINE = "raspberrypi4-64"``` according to your Raspberry Pi [model](https://github.com/agherzan/meta-raspberrypi/blob/krikstone /docs/layer-contents.md#supported-machines).
 
 - Modify the bbplayers.conf file and add all the listed dependencies listed on the [Readme.md](https://github.com/agherzan/meta-raspberrypi/blob/krikstone /README.md#dependencies).  
 
-```
-BBLAYERS ?= " \
-    /home/joao/yocto/poky/meta \
-    /home/joao/yocto/poky/meta-poky \
-    /home/joao/yocto/poky/meta-yocto-bsp \
-    /home/joao/yocto/poky/meta-raspberrypi \
-
+    ```
+    BBLAYERS ?= " \
+        /home/joao/yocto/poky/meta \
+        /home/joao/yocto/poky/meta-poky \
+        /home/joao/yocto/poky/meta-yocto-bsp \
+        /home/joao/yocto/poky/meta-raspberrypi \
+    ```  
 ## Build
 - Build the image  *minimal* ```$ bitbake -k core-image-minimal```.  
 Other available images are listed [here](https://github.com/agherzan/meta-raspberrypi/blob/krikstone /docs/layer-contents.md#images).
