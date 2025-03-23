@@ -1,0 +1,106 @@
+\documentclass{article}
+
+% Language setting
+% Replace `english' with e.g. `spanish' to change the document language
+\usepackage[utf8]{inputenc}        % Support UTF-8 encoding for Vietnamese
+\usepackage[vietnamese, english]{babel} % Enable both English and Vietnamese
+\usepackage[T5]{fontenc}           % Support Vietnamese characters properly
+
+% Set page size and margins
+% Replace `letterpaper' with `a4paper' for UK/EU standard size
+\usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage{setspace}  % Import setspace package
+
+\doublespacing  % Apply 1.5x line spacing globally
+
+% Useful packages
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+
+\title{LYE - Learning Yocto Embedded}
+\author{Nhat-Trieu Huynh-Pham}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This document provides an overview of my journey to learn \textbf{Yocto Project} from the ground up, covering key concepts, development workflows, and practical insights gained along the way.
+\end{abstract}
+
+\section{Introduction}
+
+The history of the \textbf{Yocto Project} begins with the need to create a coherent and flexible environment for building software for embedded devices that could support a diversity of hardware architectures and application requirements. Over the years, the Yocto Project has gained broad recognition and support in the industry, becoming the standard for creating custom operating systems for a wide range of devices, from simple gadgets to sophisticated industrial and commercial customized systems.
+
+The \textbf{Yocto Project} is not an operating system itself, but a set of tools that allow developers to precisely configure, compile, and deploy their versions of Linux, tailored to the specific requirements of their projects. So, as you can see, it is the perfect solution for many embedded developers! \cite{scythe2024yocto}
+
+The rest of this document is structured as follows:
+\begin{itemize}
+    \item \textbf{Section \ref{sec:terms}} introduces essential terms related to the Yocto Project.
+    \item \textbf{Section \ref{sec:build-steps}} details the step-by-step process of building a Yocto-based system.
+    \item \textbf{Section \ref{sec:customization-examples}} presents some examples of customizing a Yocto build to bring-up/port the \textbf{Raspbery Pi} hardware.
+    \item \textbf{Section \ref{sec:final-example}} provides a final example for hands-on practice.
+\end{itemize}
+
+\section{Terms} \label{sec:terms}
+
+\subsection{BitBake}
+BitBake is the main build tool of Yocto, responsible for processing configuration files and generating OS images. It is similar to Makefile but more flexible.
+
+\subsection{Recipe (Công thức - \texttt{.bb})}
+A recipe describes how to compile and install a specific software package. For example, a recipe for \texttt{busybox} specifies how to fetch the source code, compile it, and package it.
+
+\subsection{Layer}
+A layer is a collection of recipes, configurations, and patches organized to facilitate management. Examples include:
+\begin{itemize}
+    \item \texttt{meta-yocto}: The main layer of Yocto.
+    \item \texttt{meta-raspberrypi}: A layer supporting Raspberry Pi.
+    \item \texttt{meta-custom}: A user-defined custom layer.
+\end{itemize}
+
+\subsection{Machine}
+The target hardware specification for Yocto, defined using the \texttt{MACHINE} environment variable. Examples:
+\begin{itemize}
+    \item \texttt{raspberrypi4-64} for Raspberry Pi 4.
+    \item \texttt{qemuarm64} for ARM 64-bit emulation.
+\end{itemize}
+
+\subsection{Distro (Bản phối)}
+A set of policies and configurations that define a specific OS distribution. For example, \texttt{poky} is Yocto's default distribution.
+
+\subsection{Poky}
+A reference distribution in Yocto, including BitBake and a set of essential layers. \texttt{Poky} helps create a minimal embedded Linux system.
+
+\subsection{Image (Hình ảnh hệ điều hành)}
+The final output of Yocto, containing the kernel, root filesystem, and bootloader. Common image types include:
+\begin{itemize}
+    \item \texttt{core-image-minimal}: A minimal OS.
+    \item \texttt{core-image-full-cmdline}: A full command-line OS.
+    \item \texttt{core-image-sato}: A graphical OS.
+\end{itemize}
+
+\subsection{SDK (Software Development Kit)}
+A toolkit for developing applications for Yocto-based systems. It can be generated using:
+\begin{verbatim}
+bitbake -c populate_sdk <image-name>
+\end{verbatim}
+
+\subsection{Toolchain}
+Is a set of tools (compiler, linker, debugger) to compile software for embedded systems.
+
+\subsection{devtool}
+A rapid development tool in Yocto that allows adding, editing, and testing recipes.
+
+\subsection{Toaster}
+Is a web interface to manage Yocto's build system.
+\section{Build Steps} \label{sec:build-steps}
+\section{Customization example} \label{sec:customization-examples}
+
+\section{Final example to practice} \label{sec:final-example}
+
+
+\bibliographystyle{alpha}
+\bibliography{sample}
+
+\end{document}
