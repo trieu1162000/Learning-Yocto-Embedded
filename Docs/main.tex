@@ -1,5 +1,21 @@
 \documentclass{article}
 
+% For figure formatting
+\usepackage{float}
+
+% For code formatting
+\usepackage{listings}
+\lstset{
+    basicstyle=\ttfamily,
+    columns=fullflexible,
+    keepspaces=true,
+    showspaces=false,
+    showstringspaces=false
+}
+
+% For syntax highlighting
+\usepackage{xcolor}
+
 % Language setting
 % Replace `english' with e.g. `spanish' to change the document language
 \usepackage[utf8]{inputenc}        % Support UTF-8 encoding for Vietnamese
@@ -33,7 +49,7 @@ This document provides an overview of my journey to learn \textbf{Yocto Project}
 
 The history of the \textbf{Yocto Project} begins with the need to create a coherent and flexible environment for building software for embedded devices that could support a diversity of hardware architectures and application requirements. Over the years, the Yocto Project has gained broad recognition and support in the industry, becoming the standard for creating custom operating systems for a wide range of devices, from simple gadgets to sophisticated industrial and commercial customized systems.
 
-The \textbf{Yocto Project} is not an operating system itself, but a set of tools that allow developers to precisely configure, compile, and deploy their versions of Linux, tailored to the specific requirements of their projects. So, as you can see, it is the perfect solution for many embedded developers! \cite{scythe2024yocto}
+The \textbf{Yocto Project} is not an operating system itself, but a set of tools that allow developers to precisely configure, compile, and deploy their versions of Linux, tailored to the specific requirements of their projects. So, as you can see, it is the perfect solution for many embedded developers! \cite{2}
 
 The rest of this document is structured as follows:
 \begin{itemize}
@@ -94,13 +110,188 @@ A rapid development tool in Yocto that allows adding, editing, and testing recip
 
 \subsection{Toaster}
 Is a web interface to manage Yocto's build system.
+
 \section{Build Steps} \label{sec:build-steps}
-\section{Customization example} \label{sec:customization-examples}
+
+\section{Customization examples} \label{sec:customization-examples}
+
+Most of the examples presented in this document are derived from the blog \cite{1}.
+
+\subsection{Hello World}
+This section describes how to create a custom layer in Yocto and add a simple \textbf{Hello World} application.
+\section{Creating a New Layer}
+\subsection{Hello World}
+
+This section describes how to create a custom layer in Yocto and add a simple Hello World application.
+
+\begin{itemize}
+    \item \textbf{Create a New Layer:}  
+    Run the following command to create a new layer named \texttt{meta-helloworld}:
+    \begin{lstlisting}[language=bash]
+    bitbake-layers create-layer ../meta-helloworld
+    \end{lstlisting}
+    This command generates a directory structure for the new layer.
+
+    \item \textbf{Create the Recipe Directory:}  
+    Set up the necessary directories for the recipe and source files:
+    \begin{lstlisting}[language=bash]
+    mkdir -p ../meta-helloworld/recipes-example/helloworld/files
+    \end{lstlisting}
+    - \texttt{recipes-example/} stores recipes.
+    - \texttt{helloworld/} contains the Hello World recipe.
+    - \texttt{files/} holds the source code.
+
+    \item \textbf{Add Source Code:}  
+    Inside the \texttt{files} directory, create a simple C program:
+    \begin{lstlisting}[language=c]
+    #include <stdio.h>
+    int main() {
+        printf("Hello, Yocto!\n");
+        return 0;
+    }
+    \end{lstlisting}
+    Save this as \texttt{helloworld.c} inside \texttt{files/}.
+
+    \item \textbf{Create the Recipe File:}  
+    Now, create a recipe file named \texttt{helloworld\_1.0.bb} inside \texttt{recipes-example/helloworld/}:
+    \begin{lstlisting}[language=bash]
+    touch ../meta-helloworld/recipes-example/helloworld/helloworld_1.0.bb
+    \end{lstlisting}
+    Edit the file and add the following content:
+    \begin{lstlisting}[language=sh]
+    DESCRIPTION = "Simple Hello World application"
+    LICENSE = "MIT"
+    SRC_URI = "file://helloworld.c"
+
+    S = "${WORKDIR}"
+
+    do_compile() {
+        ${CC} helloworld.c -o helloworld
+    }
+
+    do_install() {
+        install -d ${D}${bindir}
+        install -m 0755 helloworld ${D}${bindir}
+    }
+    \end{lstlisting}
+
+    \item \textbf{Add the Layer to Yocto:}  
+    Register the new layer in the build environment:
+    \begin{lstlisting}[language=bash]
+    bitbake-layers add-layer ../meta-helloworld
+    \end{lstlisting}
+
+    \item \textbf{Build the Recipe:}  
+    Run the following command to compile and build the \texttt{helloworld} application:
+    \begin{lstlisting}[language=bash]
+    bitbake helloworld
+    \end{lstlisting}
+\end{itemize}
+
+\textbf{Note:} Now you can use \textbf{scp} which enabling the \textbf{ssh} feature to push the file to the board and run the application. Additionally, if you want to ensure that the \texttt{helloworld} application is included in the final image, follow these steps:
+
+\begin{itemize}
+    \item \textbf{Modify Local Configuration:}  
+    Open the \texttt{local.conf} file inside the build directory and append the following line:
+    \begin{lstlisting}
+    IMAGE_INSTALL_append = "helloworld"
+    \end{lstlisting}
+
+    \item \textbf{Build the Image:}  
+    Run the following command to build your image with the included \texttt{helloworld} application:
+    \begin{lstlisting}[language=bash]
+    bitbake core-image-minimal
+    \end{lstlisting}
+\end{itemize}
+
+\textbf{Output:} 
+    \begin{lstlisting}[language=bash]
+    root@raspberrypi4-64:~# which helloworld
+    /usr/bin/helloworld
+    root@raspberrypi4-64:~# helloworld
+    Hello World, I'm from LYE!
+    root@raspberrypi4-64:~#
+    \end{lstlisting}
+
+\subsection{SPI}
+\begin{itemize}
+    \item \textbf{Enable options in menuconfig}
+
+    \begin{itemize}
+        \item \texttt{\textbf{FB\_TFT\_ILI9341:}} which depends on \texttt{\textbf{FB\_TFT}}
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.5\linewidth]{FB_TFT_ILI9341.png}
+            \caption{FB\_TFT\_ILI9341}
+            \label{fig:fb_tft_ili9341}
+        \end{figure}
+        \begin{itemize}
+            \item Navigate to \texttt{Device Drivers -> Staging drivers -> Support for small TFT display modules}
+            \item Select \texttt{[*] FB driver for the ILI9341 LCD Controller}
+        \end{itemize}
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.5\linewidth]{FB_TFT_ILI9341_menuconfig.png}
+            \caption{FB\_TFT\_ILI9341 menuconfig}
+            \label{fig:fb_tft_ili9341_menuconfig}
+        \end{figure}
+
+        \item \texttt{\textbf{FB\_TFT:}} which depends on \texttt{\textbf{FB \&\& SPI}}
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.5\linewidth]{FB_TFT.png}
+            \caption{FB\_TFT}
+            \label{fig:fb_tft}
+        \end{figure}
+        \begin{itemize}
+            \item Navigate to \texttt{Device Drivers -> Staging drivers}
+            \item Select \texttt{[*] Support for small TFT display modules}
+        \end{itemize}
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.5\linewidth]{FB_TFT_menuconfig.png}
+            \caption{FB\_TFT menuconfig}
+            \label{fig:fb_tft_menuconfig}
+        \end{figure}
+
+        \item \texttt{\textbf{FB:}}
+        \begin{itemize}
+            \item Navigate to \texttt{Device Drivers -> Graphics support -> Frame buffer Devices}
+            \item Select \texttt{[*] Support for frame buffer devices}
+        \end{itemize}
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.5\linewidth]{FB_menuconfig.png}
+            \caption{FB menuconfig}
+            \label{fig:fb_menuconfig}
+        \end{figure}
+
+        \item \texttt{\textbf{SPI:}}
+        \begin{itemize}
+            \item Navigate to \texttt{Device Drivers -> SPI support}
+            \item Select \texttt{[*] BCM2835 SPI controller}
+        \end{itemize}
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.5\linewidth]{SPI_menuconfig.png}
+            \caption{SPI menuconfig}
+            \label{fig:spi_menuconfig}
+        \end{figure}
+    \end{itemize}
+
+    \item \textbf{Modify the device tree}
+
+\end{itemize}
+
+
+\subsection{I2C}
+
+\subsection{Qt}
 
 \section{Final example to practice} \label{sec:final-example}
 
 
-\bibliographystyle{alpha}
+\bibliographystyle{plain}
 \bibliography{sample}
 
 \end{document}
