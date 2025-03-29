@@ -1,0 +1,50 @@
+From 563d1573ffd9b57635d05de6344d65bc628e6bb5 Mon Sep 17 00:00:00 2001
+From: trieu1162000 <vikingtc4@gmail.com>
+Date: Fri, 28 Mar 2025 19:01:00 -0700
+Subject: [PATCH] add ili9341 driver node in dts
+
+---
+ arch/arm/boot/dts/bcm2711-rpi-4-b.dts | 29 +++++++++++++++++++++------
+ 1 file changed, 23 insertions(+), 6 deletions(-)
+
+diff --git a/arch/arm/boot/dts/bcm2711-rpi-4-b.dts b/arch/arm/boot/dts/bcm2711-rpi-4-b.dts
+index 8c0ab39beea1..e1a654235220 100644
+--- a/arch/arm/boot/dts/bcm2711-rpi-4-b.dts
++++ b/arch/arm/boot/dts/bcm2711-rpi-4-b.dts
+@@ -327,13 +327,30 @@ &spi0 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&spi0_pins &spi0_cs_pins>;
+ 	cs-gpios = <&gpio 8 1>, <&gpio 7 1>;
++	status = "okay";
+ 
+-	spidev0: spidev@0{
+-		compatible = "spidev";
+-		reg = <0>;	/* CE0 */
+-		#address-cells = <1>;
+-		#size-cells = <0>;
+-		spi-max-frequency = <125000000>;
++	// spidev0: spidev@0{
++	// 	compatible = "spidev";
++	// 	reg = <0>;	/* CE0 */
++	// 	#address-cells = <1>;
++	// 	#size-cells = <0>;
++	// 	spi-max-frequency = <125000000>;
++	// };
++	ili9341: LYE_ili9341@0 {
++		compatible = "ilitek,ili9341";
++		reg = <0>;
++
++		spi-max-frequency = <32000000>; // Max SPI freq
++		rotate = <90>; /* vertically:(0, 180)
++						 horizontally: (90, 270) */
++		fps = <60>;
++		bgr;
++		buswidth = <8>; // 8-bit Interface
++		dc-gpios = <&gpio 24 GPIO_ACTIVE_HIGH>; /* Data/Command pin */
++		reset-gpios = <&gpio 25 GPIO_ACTIVE_LOW>; /* RST pin */
++		// led-gpios = <&gpio 18 GPIO_ACTIVE_LOW>;
++
++		status = "okay";
+ 	};
+ 
+ 	spidev1: spidev@1{
