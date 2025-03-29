@@ -98,9 +98,9 @@ The final output of Yocto, containing the kernel, root filesystem, and bootloade
 
 \subsection{SDK (Software Development Kit)}
 A toolkit for developing applications for Yocto-based systems. It can be generated using:
-\begin{verbatim}
+\begin{lstlisting}[language=bash]
 bitbake -c populate_sdk <image-name>
-\end{verbatim}
+\end{lstlisting}
 
 \subsection{Toolchain}
 Is a set of tools (compiler, linker, debugger) to compile software for embedded systems.
@@ -215,89 +215,214 @@ This section describes how to create a custom layer in Yocto and add a simple He
 
 \subsection{SPI}
 \begin{itemize}
-    \item \textbf{Enable options in menuconfig}
-
+    \item \textbf{Kenrel configuration}
     \begin{itemize}
-        \item \texttt{\textbf{FB\_TFT\_ILI9341:}} which depends on \texttt{\textbf{FB\_TFT}}
-        \begin{figure}[H]
-            \centering
-            \includegraphics[width=0.5\linewidth]{FB_TFT_ILI9341.png}
-            \caption{FB\_TFT\_ILI9341}
-            \label{fig:fb_tft_ili9341}
-        \end{figure}
+        \item \textbf{Create a new meta layer} to add updates for kernel changes: \texttt{meta-kernelmodule}.
+        \item Enable options in menuconfig:
+        \begin{lstlisting}[language=bash]
+        bitbake -c menuconfig virtual/kernel
+        \end{lstlisting}
         \begin{itemize}
-            \item Navigate to \texttt{Device Drivers -> Staging drivers -> Support for small TFT display modules}
-            \item Select \texttt{[*] FB driver for the ILI9341 LCD Controller}
+            \item \texttt{\textbf{FB\_TFT\_ILI9341:}} (depends on \texttt{\textbf{FB\_TFT}})
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.5\linewidth]{FB_TFT_ILI9341.png}
+                \caption{FB\_TFT\_ILI9341}
+                \label{fig:fb_tft_ili9341}
+            \end{figure}
+            \begin{itemize}
+                \item Navigate to \texttt{Device Drivers -> Staging drivers -> Support for small TFT display modules}.
+                \item Select \texttt{[*] FB driver for the ILI9341 LCD Controller}.
+            \end{itemize}
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.5\linewidth]{FB_TFT_ILI9341_menuconfig.png}
+                \caption{FB\_TFT\_ILI9341 menuconfig}
+                \label{fig:fb_tft_ili9341_menuconfig}
+            \end{figure}
+            
+            \item \texttt{\textbf{FB\_TFT:}} (depends on \texttt{\textbf{FB \&\& SPI}})
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.5\linewidth]{FB_TFT.png}
+                \caption{FB\_TFT}
+                \label{fig:fb_tft}
+            \end{figure}
+            \begin{itemize}
+                \item Navigate to \texttt{Device Drivers -> Staging drivers}.
+                \item Select \texttt{[*] Support for small TFT display modules}.
+            \end{itemize}
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.5\linewidth]{FB_TFT_menuconfig.png}
+                \caption{FB\_TFT menuconfig}
+                \label{fig:fb_tft_menuconfig}
+            \end{figure}
+            
+            \item \texttt{\textbf{FB:}}
+            \begin{itemize}
+                \item Navigate to \texttt{Device Drivers -> Graphics support -> Frame buffer Devices}.
+                \item Select \texttt{[*] Support for frame buffer devices}.
+            \end{itemize}
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.5\linewidth]{FB_menuconfig.png}
+                \caption{FB menuconfig}
+                \label{fig:fb_menuconfig}
+            \end{figure}
+            
+            \item \texttt{\textbf{SPI:}}
+            \begin{itemize}
+                \item Navigate to \texttt{Device Drivers -> SPI support}.
+                \item Select \texttt{[*] BCM2835 SPI controller}.
+            \end{itemize}
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.5\linewidth]{SPI_menuconfig.png}
+                \caption{SPI menuconfig}
+                \label{fig:spi_menuconfig}
+            \end{figure}
         \end{itemize}
-        \begin{figure}[H]
-            \centering
-            \includegraphics[width=0.5\linewidth]{FB_TFT_ILI9341_menuconfig.png}
-            \caption{FB\_TFT\_ILI9341 menuconfig}
-            \label{fig:fb_tft_ili9341_menuconfig}
-        \end{figure}
-
-        \item \texttt{\textbf{FB\_TFT:}} which depends on \texttt{\textbf{FB \&\& SPI}}
-        \begin{figure}[H]
-            \centering
-            \includegraphics[width=0.5\linewidth]{FB_TFT.png}
-            \caption{FB\_TFT}
-            \label{fig:fb_tft}
-        \end{figure}
-        \begin{itemize}
-            \item Navigate to \texttt{Device Drivers -> Staging drivers}
-            \item Select \texttt{[*] Support for small TFT display modules}
-        \end{itemize}
-        \begin{figure}[H]
-            \centering
-            \includegraphics[width=0.5\linewidth]{FB_TFT_menuconfig.png}
-            \caption{FB\_TFT menuconfig}
-            \label{fig:fb_tft_menuconfig}
-        \end{figure}
-
-        \item \texttt{\textbf{FB:}}
-        \begin{itemize}
-            \item Navigate to \texttt{Device Drivers -> Graphics support -> Frame buffer Devices}
-            \item Select \texttt{[*] Support for frame buffer devices}
-        \end{itemize}
-        \begin{figure}[H]
-            \centering
-            \includegraphics[width=0.5\linewidth]{FB_menuconfig.png}
-            \caption{FB menuconfig}
-            \label{fig:fb_menuconfig}
-        \end{figure}
-
-        \item \texttt{\textbf{SPI:}}
-        \begin{itemize}
-            \item Navigate to \texttt{Device Drivers -> SPI support}
-            \item Select \texttt{[*] BCM2835 SPI controller}
-        \end{itemize}
-        \begin{figure}[H]
-            \centering
-            \includegraphics[width=0.5\linewidth]{SPI_menuconfig.png}
-            \caption{SPI menuconfig}
-            \label{fig:spi_menuconfig}
-        \end{figure}
     \end{itemize}
 
-    \item \textbf{Modify the device tree}
+    \item \textbf{Creating and Adding Change Fragments}
+    \begin{lstlisting}[language=bash]
+    bitbake -c diffconfig virtual/kernel
+    \end{lstlisting}
+    
+    \textbf{Output:}
+    \begin{lstlisting}[language=bash]
+    Config fragment has been dumped into:
+    /home/ngerr/Workspace/LYE_rasp/poky/build/tmp/work/
+    raspberrypi4_64-poky-linux/linux-raspberrypi/1_5.15.92+git999-r0/fragment.cfg
+    NOTE: Tasks Summary: Attempted 308 tasks of which 307 didn't need to be rerun and all succeeded.
+    \end{lstlisting}
+    
+    \textbf{Fragment Content:}
+    \begin{lstlisting}[language=bash]
+    CONFIG_SPI_BCM2835=y
+    CONFIG_FB_SYS_FILLRECT=y
+    CONFIG_FB_SYS_COPYAREA=y
+    CONFIG_FB_SYS_IMAGEBLIT=y
+    CONFIG_FB_SYS_FOPS=y
+    CONFIG_FB_BACKLIGHT=y
+    CONFIG_BACKLIGHT_CLASS_DEVICE=y
+    CONFIG_FB_TFT=y
+    CONFIG_FB_TFT_ILI9341=y
+    \end{lstlisting}
+    
+    \textbf{Adding to Recipe:}
+    \begin{lstlisting}[language=bash]
+    ls -rlt recipes-kernel/linux/linux-raspberrypi/ili9341_fragment.cfg
+    -rw-r--r-- 1 ngerr ngerr 212 Mar 28 23:05 recipes-kernel/linux/linux-raspberrypi/ili9341_fragment.cfg
+    \end{lstlisting}
+    
+    \textbf{Modify .bbappend:}
+    \begin{lstlisting}[language=bash]
+    SRC_URI += "file://ili9341_fragment.cfg"
+    \end{lstlisting}
 
+    \item \textbf{Modify the Device Tree}
+
+    In this section, I'll use \textbf{devtool} to clone the kernel source as a workspace and apply changes. Refer to section 2.4 in \cite{3} for more details.
+    
     \begin{itemize}
-        \item Add new layer for modifying the kernel source: \texttt{meta-kernelmodule}
-        \item Modify the dts: \texttt{bcm2711-rpi-4-b.dts}
-        \item Save changes \& build
+        \item Step 1: Create the workspace containing the kernel source
+        \begin{lstlisting}[language=bash]
+        devtool modify linux-raspberrypi
+        \end{lstlisting}
+
+        \item Step 2: Modify the \textbf{dts} in the kernel source: \texttt{bcm2711-rpi-4-b.dts}
+        
+        - Enable the \texttt{\textbf{spi0}} node with \texttt{status = "okay"}.
+        - Disable the \texttt{\textbf{spidev0}} node and replace it with a custom node:
+        
+        \begin{lstlisting}[language=bash]
+        diff --git a/arch/arm/boot/dts/bcm2711-rpi-4-b.dts b/arch/arm/boot/dts/bcm2711-rpi-4-b.dts
+        index 8c0ab39beea1..e1a654235220 100644
+        --- a/arch/arm/boot/dts/bcm2711-rpi-4-b.dts
+        +++ b/arch/arm/boot/dts/bcm2711-rpi-4-b.dts
+        @@ -327,13 +327,30 @@ &spi0 {
+         	pinctrl-names = "default";
+         	pinctrl-0 = <&spi0_pins &spi0_cs_pins>;
+         	cs-gpios = <&gpio 8 1>, <&gpio 7 1>;
+        +	status = "okay";
+         
+        -	spidev0: spidev@0{
+        -		compatible = "spidev";
+        -		reg = <0>;
+        -		spi-max-frequency = <125000000>;
+        +	// spidev0: spidev@0{
+        +	// 	compatible = "spidev";
+        +	// 	reg = <0>;
+        +	// 	spi-max-frequency = <125000000>;
+        +	// };
+        +	ili9341: LYE_ili9341@0 {
+        +		compatible = "ilitek,ili9341";
+        +		reg = <0>;
+        +		spi-max-frequency = <32000000>;
+        +		rotate = <90>;
+        +		fps = <60>;
+        +		bgr;
+        +		buswidth = <8>;
+        +		dc-gpios = <&gpio 24 GPIO_ACTIVE_HIGH>;
+        +		reset-gpios = <&gpio 25 GPIO_ACTIVE_LOW>;
+        +		status = "okay";
+         	};
+        \end{lstlisting}
+        
+        \item Save changes and build
+        
+        - Option 1: Build and test temporarily (refer to step 3-5 in section 2.4 of \cite{3}).
+        
+        - Option 2: Apply the change permanently to the recipe (refer to step 6-7 in section 2.4 of \cite{3}).
+
+        Example: The custom kernel layer \texttt{meta-kernelmodule} contains the patch:
+        
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.5\linewidth]{meta-kernelmodule_tree.png}
+            \caption{meta-kernelmodule tree}
+        \end{figure}
+
+        \item \texttt{.bbappend} content
+        \begin{lstlisting}[language=bash]
+        FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
+
+        SRC_URI += "file://0001-add-ili9341-driver-node-in-dts.patch"
+        SRC_URI += "file://ili9341_fragment.cfg"
+        \end{lstlisting}
+
     \end{itemize}
 
-    \item \textbf{Check the result on hardware}
+    \item \textbf{Check the Result on Hardware}
     \begin{itemize}
-        \item Wire connection
+        \item \textbf{Wire Connection}
         \begin{figure}[H]
             \centering
             \includegraphics[width=0.5\linewidth]{wire_connection.png}
             \caption{Wire connection}
+        \end{figure}
+        
+        \begin{lstlisting}
+        GND  - GND
+        VCC  - 3.3V
+        CS   - PIN 24 (GPIO 8)
+        CLK  - PIN 23 (GPIO 11)
+        MOSI - PIN 19 (GPIO 10)
+        RES  - PIN 22 (GPIO 25)
+        DC   - PIN 18 (GPIO 24)
+        LED  - 3.3V
+        MISO - (not connected)
+        \end{lstlisting}
+    
+        \item \textbf{Boot Screen}
+        \begin{figure}
+            \centering
+            \includegraphics[width=0.5\linewidth]{boot_screen_ili9341.png}
+            \caption{ILI9341 Boot Screen}
             \label{fig:enter-label}
         \end{figure}
-
-        \item Echo random buffer
     \end{itemize}
 
 \end{itemize}
